@@ -45,4 +45,16 @@ class LogEntry extends Model
     {
         return $this->hasMany(Incident::class);
     }
+
+    /**
+     * Casts for model attributes.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime',
+        ];
+    }
 }

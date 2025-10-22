@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\File;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Tool;
-use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 
 /**
  * MCP Tool for monitoring and processing log file entries.
@@ -18,7 +17,6 @@ use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
  * Reads the last N lines from the Laravel log file and processes them
  * through the log analysis pipeline for AI-powered incident detection.
  */
-#[IsReadOnly]
 class MonitorLogsTool extends Tool
 {
     /**

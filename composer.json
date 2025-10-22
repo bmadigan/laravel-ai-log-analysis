@@ -9,7 +9,7 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.2",
+        "php": "^8.4",
         "bmadigan/overpass": "^0.7.0",
         "laravel/framework": "^12.0",
         "laravel/mcp": "^0.3.0",

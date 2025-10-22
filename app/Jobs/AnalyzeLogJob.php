@@ -22,6 +22,16 @@ class AnalyzeLogJob implements ShouldQueue
     use Queueable;
 
     /**
+     * Maximum number of attempts.
+     */
+    public int $tries = 3;
+
+    /**
+     * Seconds to wait before retrying.
+     */
+    public int $backoff = 10;
+
+    /**
      * Create a new job instance.
      *
      * @param  int  $logEntryId  The ID of the log entry to analyze
@@ -55,5 +65,13 @@ class AnalyzeLogJob implements ShouldQueue
         // Step 3: Create an incident from the analysis
         $incidentManager = new IncidentManager;
         $incidentManager->createFromAnalysis($entry, $analysis);
+    }
+
+    /**
+     * Specify the queue name for this job.
+     */
+    public function viaQueue(): string
+    {
+        return 'analysis';
     }
 }

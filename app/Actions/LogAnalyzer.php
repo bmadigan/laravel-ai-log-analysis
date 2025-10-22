@@ -3,6 +3,7 @@
 namespace App\Actions;
 
 use App\Models\LogEntry;
+use App\Models\Severity;
 use Prism\Facades\Prism;
 
 /**
@@ -34,22 +35,45 @@ Similar Past Entries:
 
 Return a JSON object with 'severity' and 'summary' fields.";
 
-            $response = Prism::text()
+            $schema = [
+                'type' => 'object',
+                'properties' => [
+                    'severity' => [
+                        'type' => 'string',
+                        'enum' => [
+                            Severity::Low->value,
+                            Severity::Medium->value,
+                            Severity::High->value,
+                            Severity::Critical->value,
+                        ],
+                    ],
+                    'summary' => [
+                        'type' => 'string',
+                    ],
+                ],
+                'required' => ['severity', 'summary'],
+                'additionalProperties' => false,
+            ];
+
+            $result = Prism::structured()
                 ->using(
                     config('prism.log_analysis.provider'),
                     config('prism.log_analysis.model')
                 )
-                ->withMaxTokens(config('prism.log_analysis.max_tokens'))
-                ->withTemperature(config('prism.log_analysis.temperature'))
+                ->schema($schema)
+                ->withMaxTokens((int) config('prism.log_analysis.max_tokens'))
+                ->withTemperature((float) config('prism.log_analysis.temperature'))
                 ->prompt($prompt)
-                ->generate();
+                ->asStructured();
 
-            // Parse JSON response
-            $result = json_decode($response, true);
+            $severity = Severity::fromString($result['severity'] ?? null)->value;
+            $summary = isset($result['summary']) && is_string($result['summary'])
+                ? $result['summary']
+                : 'Log analysis completed';
 
             return [
-                'severity' => $result['severity'] ?? 'medium',
-                'summary' => $result['summary'] ?? 'Log analysis completed',
+                'severity' => $severity,
+                'summary' => $summary,
             ];
         } catch (\Exception $e) {
             logger()->error('Failed to analyze log entry', [
@@ -59,7 +83,7 @@ Return a JSON object with 'severity' and 'summary' fields.";
 
             // Return default values on error
             return [
-                'severity' => 'medium',
+                'severity' => Severity::Medium->value,
                 'summary' => 'Analysis failed: '.$e->getMessage(),
             ];
         }

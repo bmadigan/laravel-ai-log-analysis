@@ -4,6 +4,7 @@ namespace App\Actions;
 
 use App\Jobs\AnalyzeLogJob;
 use App\Models\LogEntry;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Monitors and processes new log entries.
@@ -20,6 +21,13 @@ class LogMonitor
      */
     public function handleNewLine(string $line): void
     {
+        $hash = 'processed_log:'.sha1($line);
+
+        // Deduplicate recently processed identical lines (5 minutes TTL)
+        if (! Cache::add($hash, true, now()->addMinutes(5))) {
+            return;
+        }
+
         $entry = LogEntry::create(['raw' => $line]);
 
         dispatch(new AnalyzeLogJob($entry->id));

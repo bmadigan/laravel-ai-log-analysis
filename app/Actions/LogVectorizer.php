@@ -23,6 +23,20 @@ class LogVectorizer
     {
         try {
             $embedding = Overpass::call('vectorize', ['text' => $entry->raw]);
+            // Validate embedding structure (expect array of 384 floats)
+            if (! is_array($embedding)) {
+                throw new \RuntimeException('Embedding is not an array');
+            }
+
+            // Basic validation for numeric values
+            $count = count($embedding);
+            $isNumeric = array_reduce($embedding, function ($carry, $v) {
+                return $carry && (is_int($v) || is_float($v));
+            }, true);
+
+            if ($count !== 384 || ! $isNumeric) {
+                throw new \RuntimeException("Invalid embedding: count={$count} numeric=".($isNumeric ? 'yes' : 'no'));
+            }
 
             LogVector::create([
                 'log_entry_id' => $entry->id,

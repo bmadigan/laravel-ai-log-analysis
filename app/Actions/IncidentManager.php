@@ -4,6 +4,7 @@ namespace App\Actions;
 
 use App\Models\Incident;
 use App\Models\LogEntry;
+use App\Models\Severity;
 
 /**
  * Manages incident creation and tracking based on log analysis.
@@ -21,14 +22,11 @@ class IncidentManager
      */
     public function createFromAnalysis(LogEntry $entry, array $analysis): void
     {
-        $severity = $analysis['severity'] ?? 'medium';
+        $severity = Severity::fromString($analysis['severity'] ?? null)->value;
         $summary = $analysis['summary'] ?? 'No summary provided.';
 
         // Validate severity value
-        $validSeverities = ['low', 'medium', 'high', 'critical'];
-        if (! in_array($severity, $validSeverities)) {
-            $severity = 'medium';
-        }
+        // Severity already normalized via enum
 
         Incident::create([
             'log_entry_id' => $entry->id,

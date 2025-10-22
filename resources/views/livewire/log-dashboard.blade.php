@@ -1,4 +1,4 @@
-<div>
+<div wire:poll.10s="refreshData">
     <flux:header container>
         <flux:heading size="xl">Log Analysis Dashboard</flux:heading>
 
