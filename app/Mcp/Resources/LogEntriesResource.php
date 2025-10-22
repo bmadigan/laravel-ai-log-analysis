@@ -9,6 +9,12 @@ use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Resource;
 
+/**
+ * MCP Resource for exposing log entries and their analysis results.
+ *
+ * Provides access to recent log entries with associated incidents,
+ * allowing AI assistants to review analysis outcomes.
+ */
 class LogEntriesResource extends Resource
 {
     /**

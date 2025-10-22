@@ -5,6 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Represents an incident detected by AI analysis of log entries.
+ *
+ * Incidents include severity levels (low, medium, high, critical)
+ * and AI-generated summaries of the detected issues.
+ */
 class Incident extends Model
 {
     /**

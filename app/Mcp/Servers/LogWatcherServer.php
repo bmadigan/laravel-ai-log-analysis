@@ -8,6 +8,12 @@ use App\Mcp\Resources\LogEntriesResource;
 use App\Mcp\Tools\MonitorLogsTool;
 use Laravel\Mcp\Server;
 
+/**
+ * MCP Server for real-time log monitoring and analysis.
+ *
+ * Provides tools and resources for AI assistants to interact with
+ * the log analysis system via the Model Context Protocol.
+ */
 class LogWatcherServer extends Server
 {
     protected string $name = 'Log Watcher';

@@ -9,12 +9,22 @@ use App\Models\LogEntry;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 
+/**
+ * Queued job for asynchronous log entry analysis.
+ *
+ * Orchestrates the complete log analysis workflow:
+ * 1. Generates vector embedding via LogVectorizer
+ * 2. Performs AI analysis via LogAnalyzer
+ * 3. Creates incident record via IncidentManager
+ */
 class AnalyzeLogJob implements ShouldQueue
 {
     use Queueable;
 
     /**
      * Create a new job instance.
+     *
+     * @param  int  $logEntryId  The ID of the log entry to analyze
      */
     public function __construct(
         public int $logEntryId,
@@ -22,6 +32,9 @@ class AnalyzeLogJob implements ShouldQueue
 
     /**
      * Execute the job.
+     *
+     * Processes the log entry through the complete analysis pipeline.
+     * If the entry is not found, the job silently completes.
      */
     public function handle(): void
     {

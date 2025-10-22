@@ -6,6 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/**
+ * Represents a single log entry from the Laravel application log.
+ *
+ * Each entry contains the raw log line and can have associated
+ * vector embeddings and AI-detected incidents.
+ */
 class LogEntry extends Model
 {
     /**

@@ -5,12 +5,20 @@ namespace App\Actions;
 use App\Models\LogEntry;
 use Prism\Facades\Prism;
 
+/**
+ * Analyzes log entries using AI to detect issues and assess severity.
+ *
+ * This action uses Prism to send log entries to LLMs (Claude, GPT, etc.)
+ * for intelligent analysis. It retrieves similar past entries as context
+ * to improve analysis accuracy.
+ */
 class LogAnalyzer
 {
     /**
      * Analyze a log entry using AI and return structured insights.
      *
-     * @return array{severity: string, summary: string}
+     * @param  LogEntry  $entry  The log entry to analyze
+     * @return array{severity: string, summary: string} Analysis results
      */
     public function analyze(LogEntry $entry): array
     {
@@ -59,6 +67,13 @@ Return a JSON object with 'severity' and 'summary' fields.";
 
     /**
      * Retrieve similar log entries based on vector similarity.
+     *
+     * Currently uses a placeholder implementation that finds entries
+     * with matching log levels. Will be enhanced with actual vector
+     * similarity search using sqlite-vec.
+     *
+     * @param  int  $logId  The ID of the current log entry
+     * @return string Formatted string of similar log entries
      */
     protected function retrieveSimilar(int $logId): string
     {
