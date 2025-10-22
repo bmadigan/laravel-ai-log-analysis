@@ -12,6 +12,7 @@
         "php": "^8.2",
         "bmadigan/overpass": "^0.7.0",
         "laravel/framework": "^12.0",
+        "laravel/mcp": "^0.3.0",
         "laravel/reverb": "^1.6",
         "laravel/tinker": "^2.10.1",
         "livewire/volt": "^1.7.0",
