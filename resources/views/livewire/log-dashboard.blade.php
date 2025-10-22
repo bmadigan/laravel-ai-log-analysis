@@ -13,13 +13,13 @@
     <flux:main container class="space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {{-- Log Entries Panel --}}
-            <flux:card>
+            <div class="rounded-lg border border-zinc-200 dark:border-zinc-800 p-4">
                 <flux:heading size="lg">Recent Log Entries</flux:heading>
 
                 <flux:separator class="my-4" />
 
                 <div wire:loading class="text-center py-8">
-                    <flux:spinner size="lg" />
+                    <flux:icon name="loading" class="size-6" />
                     <p class="mt-4 text-zinc-600 dark:text-zinc-400">Loading logs...</p>
                 </div>
 
@@ -36,16 +36,16 @@
                         </div>
                     @endforelse
                 </div>
-            </flux:card>
+            </div>
 
             {{-- Incidents Panel --}}
-            <flux:card>
+            <div class="rounded-lg border border-zinc-200 dark:border-zinc-800 p-4">
                 <flux:heading size="lg">AI-Detected Incidents</flux:heading>
 
                 <flux:separator class="my-4" />
 
                 <div wire:loading class="text-center py-8">
-                    <flux:spinner size="lg" />
+                    <flux:icon name="loading" class="size-6" />
                     <p class="mt-4 text-zinc-600 dark:text-zinc-400">Loading incidents...</p>
                 </div>
 
@@ -74,7 +74,7 @@
                         </div>
                     @endforelse
                 </div>
-            </flux:card>
+            </div>
         </div>
     </flux:main>
 </div>
