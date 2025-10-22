@@ -6,6 +6,23 @@ return [
         'middleware' => [],
         'enabled' => env('PRISM_SERVER_ENABLED', false),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Log Analysis Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for AI-powered log analysis. Defines default provider,
+    | model, and parameters for analyzing Laravel log entries.
+    |
+    */
+    'log_analysis' => [
+        'provider' => env('LOG_ANALYSIS_PROVIDER', 'anthropic'),
+        'model' => env('LOG_ANALYSIS_MODEL', 'claude-3-haiku-20240307'),
+        'max_tokens' => env('LOG_ANALYSIS_MAX_TOKENS', 200),
+        'temperature' => env('LOG_ANALYSIS_TEMPERATURE', 0.3),
+    ],
+
     'providers' => [
         'openai' => [
             'url' => env('OPENAI_URL', 'https://api.openai.com/v1'),

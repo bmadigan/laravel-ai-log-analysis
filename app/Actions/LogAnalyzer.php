@@ -27,9 +27,12 @@ Similar Past Entries:
 Return a JSON object with 'severity' and 'summary' fields.";
 
             $response = Prism::text()
-                ->using('anthropic', 'claude-3-haiku-20240307')
-                ->withMaxTokens(200)
-                ->withTemperature(0.3)
+                ->using(
+                    config('prism.log_analysis.provider'),
+                    config('prism.log_analysis.model')
+                )
+                ->withMaxTokens(config('prism.log_analysis.max_tokens'))
+                ->withTemperature(config('prism.log_analysis.temperature'))
                 ->prompt($prompt)
                 ->generate();
 
