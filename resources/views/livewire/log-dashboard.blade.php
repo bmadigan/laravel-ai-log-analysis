@@ -13,7 +13,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {{-- Log Entries Panel --}}
-            <div class="rounded-lg border border-zinc-200 p-4">
+            <div class="rounded-lg border border-zinc-200 bg-white p-4">
                 <flux:heading size="lg">Recent Log Entries</flux:heading>
 
                 <flux:separator class="my-4" />
@@ -39,7 +39,7 @@
             </div>
 
             {{-- Incidents Panel --}}
-            <div class="rounded-lg border border-zinc-200 p-4">
+            <div class="rounded-lg border border-zinc-200 bg-white p-4">
                 <flux:heading size="lg">AI-Detected Incidents</flux:heading>
 
                 <flux:separator class="my-4" />
