@@ -1,8 +1,6 @@
 <?php
 
+use App\Livewire\LogDashboard;
 use Illuminate\Support\Facades\Route;
-use Livewire\Volt\Volt;
 
-Route::get('/', function () {
-    return Volt::route('livewire.log-dashboard');
-})->name('home');
+Route::get('/', LogDashboard::class)->name('home');
