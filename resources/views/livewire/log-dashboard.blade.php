@@ -1,11 +1,9 @@
 <div wire:poll.10s="refreshData">
     <flux:main container class="space-y-6 max-w-[70rem]">
-        <flux:heading size="xl" level="1">Good afternoon, Olivia</flux:heading>
-        <flux:text class="mt-2 mb-6 text-base">Here's what's new today</flux:text>
-        <flux:separator variant="subtle" />
+        <flux:heading size="xl" level="1" class="text-zinc-900">Log Analysis AI</flux:heading>
 
         <div class="flex items-center gap-2">
-            <flux:button wire:click="refreshData" variant="primary">
+            <flux:button wire:click="refreshData" variant="outline" color="zinc" class="text-zinc-800">
                 <span wire:loading.remove>Refresh Data</span>
                 <span wire:loading><flux:icon name="loading" class="size-4 me-1" /> Loading...</span>
             </flux:button>

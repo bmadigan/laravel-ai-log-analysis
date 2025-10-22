@@ -11,7 +11,7 @@
         @fluxAppearance
     </head>
     <body class="min-h-screen bg-zinc-50">
-        <flux:header container class="bg-white border-b border-zinc-200">
+        <flux:header container class="bg-white border-b border-zinc-200 px-12 py-6">
             <a href="{{ route('home') }}" class="h-10 flex items-center gap-3" aria-label="LogAnalysis">
                 <span class="inline-flex items-center justify-center bg-zinc-900 text-white text-xs font-semibold rounded-md px-2 py-1">AI</span>
                 <span class="text-sm font-medium text-zinc-800">LogAnalysis</span>
