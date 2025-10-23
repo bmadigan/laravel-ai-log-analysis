@@ -67,11 +67,5 @@ class AnalyzeLogJob implements ShouldQueue
         $incidentManager->createFromAnalysis($entry, $analysis);
     }
 
-    /**
-     * Specify the queue name for this job.
-     */
-    public function viaQueue(): string
-    {
-        return 'analysis';
-    }
+    // Use the default queue; keep things simple for the tutorial.
 }

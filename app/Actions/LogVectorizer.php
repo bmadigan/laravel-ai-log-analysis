@@ -4,7 +4,7 @@ namespace App\Actions;
 
 use App\Models\LogEntry;
 use App\Models\LogVector;
-use Overpass\Facades\Overpass;
+use Bmadigan\Overpass\Facades\Overpass;
 
 /**
  * Generates vector embeddings for log entries using ML models.
@@ -22,7 +22,7 @@ class LogVectorizer
     public function embed(LogEntry $entry): void
     {
         try {
-            $embedding = Overpass::call('vectorize', ['text' => $entry->raw]);
+            $embedding = Overpass::generateEmbedding($entry->raw);
             // Validate embedding structure (expect array of 384 floats)
             if (! is_array($embedding)) {
                 throw new \RuntimeException('Embedding is not an array');

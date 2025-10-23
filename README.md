@@ -18,7 +18,7 @@ An AI-powered log analysis system that automatically monitors, vectorizes, and a
 - **Overpass v0.7**: Python ML bridge for embeddings
 - **Livewire 3 + Volt**: Interactive, real-time dashboard
 - **Laravel MCP v0.3**: Model Context Protocol server
-- **SQLite + sqlite-vec**: Vector database for semantic search
+- **SQLite**: Vector embeddings stored as JSON for future semantic search
 - **Tailwind CSS v4**: Modern styling with dark mode
 - **Sentence Transformers**: all-MiniLM-L6-v2 for 384-dim embeddings
 
@@ -72,14 +72,14 @@ An AI-powered log analysis system that automatically monitors, vectorizes, and a
    php artisan migrate
    ```
 
-7. **Set up Python environment for Overpass**
+7. **Install Python dependencies for Overpass**
    ```bash
    cd overpass-ai
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   pip install -r requirements.txt
+   pip3 install -r requirements.txt
    cd ..
    ```
+
+   Note: The first run will download the sentence-transformers model (~80MB).
 
 ## Configuration
 
@@ -111,25 +111,38 @@ LOG_ANALYSIS_TEMPERATURE=0.3
 
 ### Python Bridge Configuration
 
-Overpass is pre-configured to use the `overpass-ai` directory. Ensure Python 3.11+ is active:
+Overpass is pre-configured to use the `overpass-ai` directory. Ensure Python 3.9+ is active:
 ```bash
-python --version  # Should show Python 3.11 or higher
+python3 --version  # Should show Python 3.9 or higher
 ```
 
 ## Running the Application
 
-### 1. Start the Development Server
+### Quick Start (Recommended)
+
+Start all services at once with a single command:
+```bash
+composer run dev
+```
+
+This starts: web server, queue worker, log viewer (Pail), and Vite dev server.
+
+### Individual Services
+
+Alternatively, run services separately:
+
+**1. Start the Development Server**
 ```bash
 php artisan serve
 ```
 
-### 2. Start the Queue Worker
+**2. Start the Queue Worker**
 In a separate terminal:
 ```bash
 php artisan queue:work
 ```
 
-### 3. Build Frontend Assets
+**3. Build Frontend Assets**
 For development:
 ```bash
 npm run dev
@@ -140,24 +153,36 @@ For production:
 npm run build
 ```
 
-### 4. Start MCP Server (Optional)
-If using AI assistants with MCP integration:
+**4. MCP Server (Optional)**
+The MCP server runs automatically with the web server. It's accessible at:
+```
+http://loganalysisai.test/mcp/log-watcher
+```
+
+To test it with MCP Inspector:
 ```bash
-php artisan mcp:start
+php artisan mcp:inspector
 ```
 
 ## Usage
 
 ### Web Dashboard
 
-Visit `http://localhost:8000` to access the interactive dashboard showing:
+Visit `http://loganalysisai.test` (if using Laravel Herd) or `http://localhost:8000` to access the interactive dashboard showing:
 - Recent log entries (latest 10)
 - AI-detected incidents (latest 5)
 - Real-time refresh capability
 
+### MCP Integration
+
+The application includes an MCP (Model Context Protocol) server for AI assistant integration. It's available at `/mcp/log-watcher` and provides:
+
+- **Tools**: `monitor_logs` - Process recent log entries with AI
+- **Resources**: `log_entries` - Access analyzed log data
+
 ### Monitoring Logs
 
-Logs are automatically processed when accessed via the MCP server. You can also manually trigger analysis:
+You can manually trigger log analysis:
 
 ```php
 use App\Actions\LogMonitor;
@@ -168,16 +193,34 @@ $monitor->handleNewLine('[2024-10-22 12:00:00] production.ERROR: Database connec
 
 ### Generating Test Data
 
-Use factories to create sample data:
+The best way to test the full analysis pipeline is to generate real log entries:
+
 ```bash
 php artisan tinker
 ```
 
 ```php
-// Create log entries
+// Generate log entries that will be analyzed by AI
+Log::error('Database connection failed');
+Log::warning('High memory usage detected: 95%');
+Log::error('API rate limit exceeded for endpoint /users');
+Log::critical('Payment gateway timeout - transaction failed');
+exit
+```
+
+These logs will automatically:
+1. Be detected by the log monitor
+2. Trigger the analysis queue job
+3. Get vectorized via Overpass
+4. Be analyzed by Prism AI
+5. Create incidents visible in the dashboard
+
+Alternatively, use factories to create sample data (bypasses analysis):
+```php
+// Create log entries without analysis
 App\Models\LogEntry::factory()->count(20)->create();
 
-// Create incidents
+// Create incidents directly
 App\Models\Incident::factory()->count(5)->create();
 ```
 
@@ -254,12 +297,13 @@ php artisan queue:work --verbose
 
 ### Python environment errors
 
-Activate the virtual environment and reinstall:
+Reinstall Python dependencies:
 ```bash
 cd overpass-ai
-source venv/bin/activate
-pip install --upgrade -r requirements.txt
+pip3 install --upgrade -r requirements.txt
 ```
+
+If you see "ModuleNotFoundError: No module named 'sentence_transformers'", ensure you've installed the requirements.
 
 ### LLM API errors
 

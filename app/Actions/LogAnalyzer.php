@@ -4,7 +4,10 @@ namespace App\Actions;
 
 use App\Models\LogEntry;
 use App\Models\Severity;
-use Prism\Facades\Prism;
+use Prism\Prism\Prism;
+use Prism\Prism\Schema\EnumSchema;
+use Prism\Prism\Schema\ObjectSchema;
+use Prism\Prism\Schema\StringSchema;
 
 /**
  * Analyzes log entries using AI to detect issues and assess severity.
@@ -24,6 +27,7 @@ class LogAnalyzer
     public function analyze(LogEntry $entry): array
     {
         try {
+            logger()->debug('LogAnalyzer.analyze invoked', ['file' => __FILE__, 'line' => __LINE__]);
             $context = $this->retrieveSimilar($entry->id);
 
             $prompt = "Analyze this Laravel log entry and provide severity (low, medium, high, critical) and a brief summary.
@@ -31,41 +35,44 @@ class LogAnalyzer
 Log Entry: {$entry->raw}
 
 Similar Past Entries:
-{$context}
+{$context}";
 
-Return a JSON object with 'severity' and 'summary' fields.";
-
-            $schema = [
-                'type' => 'object',
-                'properties' => [
-                    'severity' => [
-                        'type' => 'string',
-                        'enum' => [
+            $schema = new ObjectSchema(
+                'log_analysis',
+                'Analysis of a log entry with severity and summary',
+                [
+                    new EnumSchema(
+                        'severity',
+                        'The severity level of the log entry',
+                        [
                             Severity::Low->value,
                             Severity::Medium->value,
                             Severity::High->value,
                             Severity::Critical->value,
-                        ],
-                    ],
-                    'summary' => [
-                        'type' => 'string',
-                    ],
+                        ]
+                    ),
+                    new StringSchema('summary', 'Brief summary of the issue'),
                 ],
-                'required' => ['severity', 'summary'],
-                'additionalProperties' => false,
-            ];
+                ['severity', 'summary']
+            );
 
-            $result = Prism::structured()
+            $builder = Prism::structured()
                 ->using(
                     config('prism.log_analysis.provider'),
                     config('prism.log_analysis.model')
                 )
-                ->schema($schema)
+                ->withSchema($schema)
                 ->withMaxTokens((int) config('prism.log_analysis.max_tokens'))
-                ->withTemperature((float) config('prism.log_analysis.temperature'))
-                ->prompt($prompt)
-                ->asStructured();
+                ->withPrompt($prompt);
 
+            $configuredTemp = config('prism.log_analysis.temperature');
+            if ($configuredTemp !== null && $configuredTemp !== '') {
+                $builder = $builder->usingTemperature((float) $configuredTemp);
+            }
+
+            $response = $builder->asStructured();
+
+            $result = $response->structured;
             $severity = Severity::fromString($result['severity'] ?? null)->value;
             $summary = isset($result['summary']) && is_string($result['summary'])
                 ? $result['summary']

@@ -8,7 +8,7 @@
             @vite(['resources/css/app.css', 'resources/js/app.js'])
         @endif
 
-        @fluxAppearance
+
     </head>
     <body class="min-h-screen bg-zinc-50">
         <flux:header container class="bg-white border-b border-zinc-200 px-12 py-6">

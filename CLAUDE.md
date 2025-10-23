@@ -26,12 +26,12 @@ This is an **AI-Driven Log Analysis System** built with Laravel 12 that analyzes
 
 ## Architecture Pattern: Active Classes
 
-This application uses the **Active Pattern** for domain logic. Business logic is organized into focused, single-responsibility classes in the `app/Active/` directory rather than being scattered across controllers or models.
+This application uses the **Active Pattern** for domain logic. Business logic is organized into focused, single-responsibility classes in the `app/Actions/` directory rather than being scattered across controllers or models.
 
 ### Active Classes Structure
 
 ```
-app/Active/
+app/Actions/
 ├── LogMonitor.php        - Handles new log line detection
 ├── LogVectorizer.php     - Creates embeddings via Overpass
 ├── LogAnalyzer.php       - AI analysis via Prism
@@ -113,10 +113,10 @@ Prism is configured in `config/prism.php` with support for multiple LLM provider
 ```
 
 Access via:
-- `Prism::text()->using('openai', 'gpt-4')` - Text generation
-- `Prism::structured()->using(...)` - Structured JSON output
-- `Prism::embeddings()->using(...)` - Generate embeddings
-- `prism()` helper function - Fluent alternative
+- `prism()->text()->using('openai', 'gpt-4')` - Text generation
+- `prism()->structured()->using(...)` - Structured JSON output
+- `prism()->embeddings()->using(...)` - Generate embeddings
+- Uses `prism()` helper function (not a facade)
 
 **Before implementing Prism features**, use web search to find current documentation at prismphp.com.
 
@@ -131,9 +131,9 @@ Configuration in `config/overpass.php`:
 
 Example usage:
 ```php
-use Overpass\Facades\Overpass;
+use Bmadigan\Overpass\Facades\Overpass;
 
-$embedding = Overpass::call('vectorize', ['text' => $logLine]);
+$embedding = Overpass::generateEmbedding($logLine);
 ```
 
 Python dependencies (sentence-transformers, etc.) must be installed separately.
@@ -238,16 +238,14 @@ The application runs on Laravel Herd:
 
 ## MCP Server (Log Watcher)
 
-The application includes an MCP server (`app/MCP/LogWatcher.php`) that monitors log file changes:
+The application includes an MCP server (`app/Mcp/Servers/LogWatcherServer.php`) that provides log monitoring capabilities:
 
-```bash
-php artisan mcp:serve
-```
+The MCP server runs automatically with the web application and is accessible at:
+- URL: `http://loganalysisai.test/mcp/log-watcher`
+- Provides tools: `monitor_logs` - Process recent log entries with AI
+- Provides resources: `log_entries` - Access analyzed log data
 
-The watcher:
-- Polls `storage/logs/laravel.log` every 3 seconds
-- Detects new lines via file size comparison
-- Dispatches jobs for new log entries
+No separate command needed - it's a web-based MCP server, not stdio.
 
 ## Code Style Guidelines
 

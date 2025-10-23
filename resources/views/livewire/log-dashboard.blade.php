@@ -1,12 +1,8 @@
 <div wire:poll.10s="refreshData">
     <flux:main container class="space-y-6 max-w-[70rem]">
-        <flux:heading size="xl" level="1" class="text-zinc-900">Log Analysis AI</flux:heading>
-
-        <div class="flex items-center gap-2">
-            <flux:button wire:click="refreshData" variant="outline" color="zinc" class="text-zinc-800">
-                <span wire:loading.remove>Refresh Data</span>
-                <span wire:loading><flux:icon name="loading" class="size-4 me-1" /> Loading...</span>
-            </flux:button>
+        <div class="flex items-center justify-between mb-2">
+            <flux:heading size="xl" level="1" class="text-zinc-900">Log Analysis AI</flux:heading>
+            <flux:button wire:click="refreshData" icon="arrow-path" variant="primary">Refresh Data</flux:button>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
