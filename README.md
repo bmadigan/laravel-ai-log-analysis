@@ -2,13 +2,17 @@
 
 An AI-powered log analysis system that automatically monitors, vectorizes, and analyzes Laravel application logs to detect incidents and assess severity levels.
 
+![Log Analysis AI Dashboard](public/assets/log-analysis-ai-screenshot.png)
+
 ## Features
 
 - **Real-time Log Monitoring**: MCP server integration for continuous log file watching
 - **AI-Powered Analysis**: Uses LLMs (Claude, GPT, etc.) via Prism to analyze log entries
 - **Semantic Search**: Vector embeddings enable similarity-based log grouping
 - **Incident Detection**: Automatic severity classification (low, medium, high, critical)
-- **Interactive Dashboard**: Livewire-powered UI with dark mode support
+- **Critical Alert System**: Dismissible banners for critical incidents with viewed status tracking
+- **Test Error Generator**: One-click generation of 5-10 random test logs with automatic AI analysis
+- **Interactive Dashboard**: Livewire-powered UI with real-time updates and polling
 - **Asynchronous Processing**: Queue-based architecture for scalable analysis
 
 ## Tech Stack
@@ -171,7 +175,23 @@ php artisan mcp:inspector
 Visit `http://loganalysisai.test` (if using Laravel Herd) or `http://localhost:8000` to access the interactive dashboard showing:
 - Recent log entries (latest 10)
 - AI-detected incidents (latest 5)
-- Real-time refresh capability
+- Critical alert banners for unviewed incidents
+- Real-time refresh capability (auto-polls every 10 seconds)
+
+### Generate Test Errors
+
+The dashboard includes a "Generate Test Errors" button that creates 5-10 random log entries with varying severity levels (critical, error, warning, info, debug). These logs are automatically:
+1. Written to `storage/logs/laravel.log`
+2. Processed through the analysis pipeline
+3. Vectorized using sentence-transformers
+4. Analyzed by your configured LLM
+5. Displayed in the dashboard with severity classification
+
+This is the easiest way to test the complete AI analysis workflow.
+
+### Critical Alerts
+
+When the system detects critical incidents (like disk space warnings or database connection pool exhaustion), they appear as red alert banners at the top of the dashboard. You can dismiss these alerts by clicking the X button, which marks them as "viewed" and prevents them from reappearing.
 
 ### MCP Integration
 
@@ -317,14 +337,23 @@ php artisan tinker
 
 SQLite has limited concurrency. For production, consider PostgreSQL or MySQL.
 
-## Tutorial Purpose
+## Tutorial
 
-This project is designed as a tutorial for integrating AI capabilities into Laravel applications. It demonstrates:
+This project is designed as an advanced tutorial for integrating AI capabilities into Laravel applications. It demonstrates:
 - Multi-provider LLM integration via Prism
 - Python ML bridge with Overpass
 - MCP server implementation
 - Real-time Livewire dashboards
 - Queue-based async processing
+- Active Pattern for domain logic organization
+
+A comprehensive tutorial covering the architecture, patterns, and implementation details is available in [`.ai/tutorial.md`](.ai/tutorial.md). The tutorial is written for advanced Laravel developers and covers:
+- The Active Pattern and why it's used over traditional service classes
+- Python/PHP bridge architecture with Overpass
+- Vector storage using SQLite JSON columns
+- LLM integration with structured outputs via Prism
+- MCP server implementation for AI accessibility
+- Complete request flow from log ingestion to incident detection
 
 **Note**: This is an educational project. Automated testing is intentionally omitted to focus on core functionality.
 
