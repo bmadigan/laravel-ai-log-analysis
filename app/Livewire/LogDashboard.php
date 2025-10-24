@@ -29,6 +29,13 @@ class LogDashboard extends Component
     public $incidents = [];
 
     /**
+     * Collection of critical unviewed incidents.
+     *
+     * @var array
+     */
+    public $criticalAlerts = [];
+
+    /**
      * Initialize the component.
      */
     public function mount(): void
@@ -56,6 +63,19 @@ class LogDashboard extends Component
         $this->incidents = Incident::with('logEntry')
             ->latest('created_at')
             ->limit(5)
+            ->get()
+            ->map(fn ($incident) => [
+                'id' => $incident->id,
+                'severity' => $incident->severity,
+                'summary' => $incident->summary,
+                'created_at' => $incident->created_at->diffForHumans(),
+                'log_preview' => $incident->logEntry ? substr($incident->logEntry->raw, 0, 100).'...' : 'N/A',
+            ])
+            ->toArray();
+
+        // Load critical unviewed incidents for alerts
+        $this->criticalAlerts = Incident::criticalUnviewed()
+            ->with('logEntry')
             ->get()
             ->map(fn ($incident) => [
                 'id' => $incident->id,
@@ -99,6 +119,36 @@ class LogDashboard extends Component
             'low' => 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
             default => 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
         };
+    }
+
+    /**
+     * Generate random test errors for testing the log analysis system.
+     */
+    public function generateTestErrors(): void
+    {
+        $generator = new \App\Actions\TestErrorGenerator;
+        $count = $generator->generate();
+
+        // Show success notification (Livewire 3 flash message)
+        session()->flash('message', "Generated {$count} test errors. Analysis jobs dispatched.");
+
+        // Refresh data to show new logs (incidents will appear after jobs process)
+        $this->refreshData();
+    }
+
+    /**
+     * Dismiss a critical alert by marking it as viewed.
+     *
+     * @param  int  $incidentId  The ID of the incident to dismiss
+     */
+    public function dismissAlert(int $incidentId): void
+    {
+        $incident = Incident::find($incidentId);
+
+        if ($incident) {
+            $incident->markAsViewed();
+            $this->refreshData();
+        }
     }
 
     /**

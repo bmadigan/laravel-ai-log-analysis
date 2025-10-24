@@ -22,6 +22,7 @@ class Incident extends Model
         'log_entry_id',
         'severity',
         'summary',
+        'viewed_at',
     ];
 
     /**
@@ -30,5 +31,38 @@ class Incident extends Model
     public function logEntry(): BelongsTo
     {
         return $this->belongsTo(LogEntry::class);
+    }
+
+    /**
+     * Scope to filter critical incidents that have not been viewed.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeCriticalUnviewed($query)
+    {
+        return $query->where('severity', Severity::Critical->value)
+            ->whereNull('viewed_at')
+            ->latest('created_at');
+    }
+
+    /**
+     * Mark this incident as viewed.
+     */
+    public function markAsViewed(): void
+    {
+        $this->update(['viewed_at' => now()]);
+    }
+
+    /**
+     * Casts for model attributes.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'viewed_at' => 'datetime',
+        ];
     }
 }
